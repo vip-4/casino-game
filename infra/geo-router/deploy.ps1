@@ -8,8 +8,15 @@
 #   $env:CLOUDFLARE_ACCOUNT_ID = "33717d3e6845f08352ee14d9d672e273"
 #   powershell -NoProfile -ExecutionPolicy Bypass -File infra/geo-router/deploy.ps1
 #
+# Optional: -RemoveBinding <name> drops a binding from the published script.
+#   powershell -NoProfile -ExecutionPolicy Bypass -File infra/geo-router/deploy.ps1 -RemoveBinding ENABLE_CACHE_API
+#
 # The script reads the CURRENT bindings from the API and only overrides what changed,
 # so KV namespace ids / R2 bucket names / geo settings are never lost.
+
+param(
+  [string[]]$RemoveBinding = @()
+)
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -35,6 +42,10 @@ $st = $sj.result
 
 $bindings = @()
 foreach ($b in $st.bindings) {
+  if ($RemoveBinding -contains $b.name) {
+    Write-Output ('  - removing binding: ' + $b.name)
+    continue
+  }
   if ($b.type -eq 'plain_text') {
     $bindings += @{ name = $b.name; type = 'plain_text'; text = [string]$b.text }
   } elseif ($b.type -eq 'kv_namespace') {

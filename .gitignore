@@ -16,6 +16,8 @@ _stage/
 _*.ps1
 _*.json
 _*.html
+_*.err
+_*.mjs
 
 # 日志
 *.log

@@ -1082,9 +1082,27 @@ function getPreferredLanguage(acceptLang) {
 __name(getPreferredLanguage, "getPreferredLanguage");
 function buildCacheKey(region, deviceType, language, pathname) {
   const normalizedPath = pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
-  return `${region}__${deviceType}__${language}__${normalizedPath}`;
+  return `v6__${region}__${deviceType}__${language}__${normalizedPath}`;
 }
 __name(buildCacheKey, "buildCacheKey");
+function addLinkHeaders(response, request, region, pathname) {
+  try {
+    const url = new URL(request.url);
+    const proto = url.protocol;
+    const host = url.host;
+    const regionLangMap = { cn: "zh-CN", en: "en", eu: "de", sea: "en", jpkr: "ja", global: "en" };
+    const regionLinks = [];
+    for (const [r, l] of Object.entries(regionLangMap)) {
+      regionLinks.push(`<${proto}//${host}/${r}${pathname}>; rel="alternate"; hreflang="${l}"`);
+    }
+    regionLinks.push(`<${proto}//${host}/global${pathname}>; rel="alternate"; hreflang="x-default"`);
+    response.headers.set("Link", regionLinks.join(", "));
+    response.headers.set("X-SEO-Region", region);
+  } catch (e) {
+    console.error("[LinkHeader] error:", e);
+  }
+}
+__name(addLinkHeaders, "addLinkHeaders");
 function setCacheHeaders(response, config2, region, deviceType, language, pathname, contentType) {
   const cacheKey = buildCacheKey(region, deviceType, language, pathname);
   response.headers.set("Cf-Cache-Key", cacheKey);
@@ -1352,7 +1370,7 @@ var index_default = {
       finalResponse.headers.set("X-Route-Action", routeAction);
       finalResponse.headers.set("X-Country", country || "unknown");
       if (contentType.includes("text/html")) {
-        const proto = request.headers.get("X-Forwarded-Proto") || url.protocol;
+        const proto = url.protocol;
         const host = request.headers.get("Host") || url.hostname;
         const canonicalUrl = `${proto}//${host}${pathname}`;
         finalResponse.headers.set("Link", `<${canonicalUrl}>; rel="canonical"`);

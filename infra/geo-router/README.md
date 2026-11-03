@@ -62,8 +62,65 @@ Worker 自身的 Cache API 里存着故障期间产生的 24 小时 404，
 | `REGIONAL_ASSETS` | r2_bucket | 区域预渲染页面（bucket `h5-game-assets`） |
 | `GAME_KV` | kv_namespace | KV 存储 |
 | `PRERENDERED_PATHS` | plain_text | 优先从 R2 读取的路径列表 |
-| `ENABLE_CACHE_API` | plain_text | `false` = 关闭 Worker 私有缓存 |
+| `ENABLE_CACHE_API` | plain_text | `false` = 关闭 Worker 私有缓存（**已删除该绑定 = 缓存开启**） |
 | 其余 | plain_text | `DEFAULT_REGION` / `GEO_POOLS` / `REGION_MAPPING` / `DEPLOY_VERSION` / `API_BYPASS_PATHS` / 缓存 TTL 等 |
+
+## 第二轮修复（2026-11-04，恢复缓存 + 地区预渲染）
+
+### ① `addLinkHeaders` 未定义 → 缓存命中即 500
+
+缓存 HIT 分支调用了 `addLinkHeaders(...)`，但**模块里根本没有这个函数**：
+
+```
+ReferenceError: addLinkHeaders is not defined at Object.fetch (index.js:1276:11)
+```
+
+Worker 未捕获异常 → Cloudflare 返回 **1101**。表现是「第一次访问正常、第二次 500」——
+因为 MISS 时走的是源站分支（那里是内联实现），HIT 时才走缺失的函数。
+已补上与源站分支一致的 hreflang `Link` 头实现（并用 `try/catch` 兜底）。
+
+顺带修掉源站分支的同一处隐患：`X-Forwarded-Proto` 不含冒号，拼出来是 `https//host/...`，
+现统一改用 `url.protocol`（`https:`）→ `https://host/...`。
+
+### ② 缓存键加版本前缀
+
+原缓存键 `region__device__lang__path` **不含源站/版本**，导致：
+- 源站变更后旧缓存无法自动失效；
+- 故障期缓存的 404 无法清除（Worker 私有缓存，zone 级 `purge_cache` 清不掉）。
+
+现改为 `v6__region__device__lang__path`。**改内容后 bump 版本号即可一次性作废旧缓存**。
+
+### ③ 恢复地区预渲染文件（R2 `h5-game-assets`）
+
+原先 `cn/`、`en/`、`eu/`、`sea/`、`jpkr/`、`global/` 前缀目录整个缺失，
+路由只能回源。现按 `tryPrerenderedHtml()` 的取键规则上传 **78 个对象**：
+
+| 键 | 对应 URL | 说明 |
+| --- | --- | --- |
+| `<region>/index.html` | `/` 与 `/<region>` | 该地区访客看到的首页 |
+| `<region>/.html` | `/<region>/` | 带斜杠形式 |
+| `<region>/about.html` 等 | `/<region>/about` | 地区前缀下的子页面 |
+| `<visitor>/<region>/.html` | `/<region>/`（其他地区访客） | 保证 hreflang 里公布的地址都能打开 |
+
+上传脚本：`upload-prerender.ps1`（幂等，直接覆盖 R2 对象）。
+上传前会把站内链接改成**根绝对路径**（`assets/…` → `/assets/…`、`games/slots.html` → `/games/slots`），
+否则在 `/<region>/` 下相对路径会 404、样式全丢。
+地区专属文案可以**直接改 R2 对象**、无需重新部署——这正是预渲染的意义。
+
+### ④ 删除占位 A 记录
+
+`vip01.cc.cd` 上的 `A vip-* → 192.0.2.1`（TEST-NET-1 文档保留地址）已删除，
+改由通配 CNAME `*.vip01.cc.cd → my-slot-game.pages.dev` 接管。
+`vip-NN.vip01.cc.cd` 仍返回 200，DNS 解析到 Cloudflare 真实边缘 IP。
+同 zone 内还剩两条同类占位记录（`slot.` / `luckyarcade.`），未动。
+
+## 已知问题（未处理，供后续参考）
+
+`scheduled` 定时任务（健康检查 + 缓存预热）会按地区循环 `fetch(origin + path)`：
+6 个地区 × `prerenderedPaths`（8 条）+ 每地区一次 `/health` ≈ 54 次子请求，
+**超过免费套餐单次调用 50 次子请求的上限**——tail 日志里能看到最后一个地区报
+`Too many subrequests by single Worker invocation`。
+预热本身只打源站，对 Worker 私有缓存无效；如需修复可改为分批 `Promise.all` 或缩短预热列表。
 
 ## 重新发布
 
@@ -74,7 +131,22 @@ powershell -NoProfile -ExecutionPolicy Bypass -File infra/geo-router/deploy.ps1
 ```
 
 脚本会先从 API 读取现有绑定再覆盖，避免丢失 KV / R2 绑定。
+需要移除某个绑定时加 `-RemoveBinding <名称>`（例如关闭缓存）：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File infra/geo-router/deploy.ps1 -RemoveBinding ENABLE_CACHE_API
+```
+
+上传地区预渲染文件：
+
+```powershell
+$env:R2_ACCESS_KEY_ID     = "<access key id>"
+$env:R2_SECRET_ACCESS_KEY = "<secret access key>"
+powershell -NoProfile -ExecutionPolicy Bypass -File infra/geo-router/upload-prerender.ps1
+```
 
 > 上传 Worker 必须用 **multipart**，且模块名要等于上传文件名（`index.js`）并与 `main_module` 一致；
 > `main_module` 必须是 ESM（`export default`）。用 `PATCH .../bindings` 改绑定会返回
 > 405（该 token 不支持），只能整包重传。
+> metadata 必须走文件（`-F "metadata=<_meta.json;type=application/json"`），
+> 否则 PowerShell 原生参数会吃掉 JSON 的双引号。
