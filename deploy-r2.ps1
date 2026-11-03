@@ -1,13 +1,14 @@
-# deploy-r2.ps1 — 将静态站点部署到 Cloudflare R2（无需额外依赖，仅依赖 curl 8.13+）
+﻿# deploy-r2.ps1 — 将静态站点部署到 Cloudflare R2（无需额外依赖，仅依赖 curl 8.13+）
 #
 # 前置条件（在你自己的机器上）：
 #   1. 在 Cloudflare Dashboard 中「启用 R2」（需先同意计费/绑定支付方式）。
 #   2. 创建 bucket：casino-game-prod（或在下方 $Bucket 改名）。
-#   3. 该机器能访问 https://<ACCOUNT>.r2.cloudflarestorage.com （本环境被代理拦截，需在本地运行）。
+#   3. 该机器能访问 https://<ACCOUNT>.r2.cloudflarestorage.com
 #
 # 运行： powershell -NoProfile -ExecutionPolicy Bypass -File deploy-r2.ps1
+#   （需先设置环境变量 R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY）
 
-$ACCOUNT   = "ceffe067ff7027b695ef91fcea9fa38a"  # R2 账户 ID（非机密）
+$ACCOUNT   = "33717d3e6845f08352ee14d9d672e273"  # R2 账户 ID（非机密）
 # 凭证通过环境变量传入，避免将密钥提交到仓库：
 #   $env:R2_ACCESS_KEY_ID / $env:R2_SECRET_ACCESS_KEY
 $AK        = if ($env:R2_ACCESS_KEY_ID) { $env:R2_ACCESS_KEY_ID } else { "" }
@@ -41,7 +42,12 @@ $ct = @{
 }
 
 $files = Get-ChildItem -Path $LocalDir -Recurse -File | Where-Object {
-  $_.FullName -notmatch '[\\/]\.git[\\/]' -and $_.Name -ne "deploy-r2.ps1" -and $_.Name -ne "README.md"
+  $_.FullName -notmatch '[\\/]\.git[\\/]' -and
+  $_.FullName -notmatch '[\\/](tools|tests|_stage)[\\/]' -and
+  $_.FullName -notmatch '[\\/]\.wrangler[\\/]' -and
+  $_.Name -notmatch '^\.' -and
+  $_.Name -notmatch '^_' -and
+  $_.Name -notin @("deploy-r2.ps1", "README.md", ".gitlab-ci.yml")
 }
 $total = $files.Count
 $i = 0

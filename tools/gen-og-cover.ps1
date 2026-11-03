@@ -1,4 +1,4 @@
-# 生成 1200x630 的 PNG 社交分享封面 (assets/img/og-cover.png)
+﻿# 生成 1200x630 的 PNG 社交分享封面 (assets/img/og-cover.png)
 #
 # 用法:
 #   powershell -NoProfile -ExecutionPolicy Bypass -File tools/gen-og-cover.ps1

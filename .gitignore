@@ -9,6 +9,13 @@ Thumbs.db
 node_modules/
 dist/
 build/
+.wrangler/
+
+# 本地部署暂存目录 / 临时脚本
+_stage/
+_*.ps1
+_*.json
+_*.html
 
 # 日志
 *.log

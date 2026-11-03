@@ -33,23 +33,32 @@ node tests/blackjack.test.cjs
 > 社交分享封面默认使用 `assets/img/og-cover.png`（1200×630 PNG，兼容微信、微博、Twitter、Facebook 等各平台）；
 > `assets/img/og-cover.svg` 作为矢量备用保留。可用 `tools/gen-og-cover.ps1` 重新生成 PNG 封面。
 
-### 方案 A：GitHub Pages（当前生产环境）
-仓库已推送至 `vip-4/casino-game` 并开启 GitHub Pages，生产地址：
-**https://vip-4.github.io/casino-game/**
+### 方案 A：Cloudflare Pages（当前生产环境）✅
+生产地址：**https://casino-game-3nn.pages.dev/**
+Pages 项目名 `casino-game`（Cloudflare 账户 `33717d3e6845f08352ee14d9d672e273`）。
 
 ```bash
-# 本地修改后同步到 GitHub（本仓库经 orphan 分支 github-clean 推送）：
+npm install -g wrangler
+export CLOUDFLARE_API_TOKEN=<你的 API Token>
+export CLOUDFLARE_ACCOUNT_ID=33717d3e6845f08352ee14d9d672e273
+npx wrangler pages deploy . --project-name=casino-game --branch=main
+```
+
+> **pretty URL 说明**：Cloudflare Pages 默认把 `.html` 以 308 跳转到无扩展名路径，
+> 因此 canonical / Open Graph / sitemap 使用 `/about`、`/games/slots` 这类无扩展名地址；
+> 站内链接仍写 `.html`（相对路径），在 Pages、GitHub Pages、Gitee 等任意平台都能正常工作。
+>
+> `_headers` 文件为 Pages 提供了安全响应头（`X-Content-Type-Options` / `X-Frame-Options` /
+> `Referrer-Policy`）与静态资源长期缓存（`/assets/*` → `max-age=31536000, immutable`）。
+
+### 方案 B：GitHub Pages（镜像）
+仓库已推送至 `vip-4/casino-game` 并开启 GitHub Pages，镜像地址：
+**https://vip-4.github.io/casino-game/**
+```bash
 git push github github-clean:main
 ```
 > 说明：仓库历史不含任何密钥；`deploy-r2.ps1` 的 R2 凭证请通过环境变量
 > `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` 传入，勿硬编码。
-
-### 方案 B：Cloudflare Pages
-在**本机**（需能访问 Cloudflare）安装 Node.js 后执行：
-```bash
-npx wrangler pages deploy . --project-name=casino-game-prod
-# 首次会引导登录；项目名可自定义，部署后默认域名 https://<project>.pages.dev
-```
 
 ### 方案 C：GitCode / AtomGit Pages（CI 已内置）
 仓库已包含 `.gitlab-ci.yml`，推送 `master` 即触发 GitLab CI 构建并发布到 Pages。
@@ -69,11 +78,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File deploy-r2.ps1
 或用 AWS CLI：
 ```bash
 aws s3 sync . s3://casino-game-prod \
-  --endpoint-url https://ceffe067ff7027b695ef91fcea9fa38a.r2.cloudflarestorage.com --profile r2
+  --endpoint-url https://33717d3e6845f08352ee14d9d672e273.r2.cloudflarestorage.com --profile r2
 ```
 
-> 环境说明：当前开发环境代理层限制了对外文件上传（Cloudflare Pages / R2 S3 端点不可达），
-> 上述部署步骤需在可直连目标平台的本机执行；站点源码与 CI 配置均已就绪，可直接部署。
+> bucket `casino-game-prod`（账户 `33717d3e6845f08352ee14d9d672e273`，APAC 区域）已创建并完成上传。
+> 公开访问需在 Cloudflare Dashboard 为该 bucket 开启 **Public bucket / R2.dev 子域**，
+> 之后可通过 `https://pub-<hash>.r2.dev/casino-game-prod/index.html` 访问；
+> 也可在 Pages 项目中通过 Worker 绑定 R2 作为后端。
 
 ## 免责声明
 本项目仅供学习、演示与娱乐，不提供任何赌博服务，不涉及真实货币交易。
