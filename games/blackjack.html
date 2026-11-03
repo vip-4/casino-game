@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>21点（Blackjack）| 星悦轻量娱乐场</title>
+  <meta name="description" content="星悦轻量娱乐场的 21 点纸牌游戏：纯原生 JavaScript 实现，用虚拟筹码下注，可要牌、停牌，与庄家比点数，接近 21 点获胜。零依赖、加载快，不涉及任何真实金钱。" />
+  <meta name="keywords" content="21点,Blackjack,黑杰克,纸牌游戏,扑克游戏,网页游戏,虚拟筹码,免费游戏,静态网站,前端演示" />
+  <meta name="author" content="星悦轻量娱乐场" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <link rel="canonical" href="https://vip-4.github.io/casino-game/games/blackjack.html" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="zh_CN" />
+  <meta property="og:site_name" content="星悦轻量娱乐场" />
+  <meta property="og:title" content="21点（Blackjack）| 星悦轻量娱乐场" />
+  <meta property="og:description" content="纯静态 21 点纸牌游戏：虚拟筹码下注、要牌、停牌，与庄家比点数。不涉及真实金钱。" />
+  <meta property="og:url" content="https://vip-4.github.io/casino-game/games/blackjack.html" />
+  <meta property="og:image" content="https://vip-4.github.io/casino-game/assets/img/og-cover.png" />
+  <meta property="og:image:alt" content="星悦轻量娱乐场游戏合集封面" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="21点（Blackjack）| 星悦轻量娱乐场" />
+  <meta name="twitter:description" content="纯静态 21 点纸牌游戏：虚拟筹码下注、要牌、停牌。不涉及真实金钱。" />
+  <meta name="twitter:image" content="https://vip-4.github.io/casino-game/assets/img/og-cover.png" />
+  <meta name="twitter:image:alt" content="星悦轻量娱乐场游戏合集封面" />
+
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../assets/css/main.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://vip-4.github.io/casino-game/" },
+      { "@type": "ListItem", "position": 2, "name": "21点", "item": "https://vip-4.github.io/casino-game/games/blackjack.html" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "21点（Blackjack）",
+    "url": "https://vip-4.github.io/casino-game/games/blackjack.html",
+    "applicationCategory": "GameApplication",
+    "operatingSystem": "任意（纯静态网页，支持主流浏览器）",
+    "inLanguage": "zh-CN",
+    "description": "纯 HTML/CSS/原生 JavaScript 实现的 21 点纸牌游戏，使用虚拟筹码下注，支持要牌、停牌与庄家自动补牌，不涉及真实金钱。",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+    "featureList": [
+      "虚拟筹码下注",
+      "要牌 / 停牌操作",
+      "庄家 17 点停牌策略",
+      "A 牌自动 11 点或 1 点",
+      "本地保存筹码余额"
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "21 点游戏规则是什么？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "每局开始会给你发两张牌、庄家发两张牌（其中一张暗牌）。目标是让手牌总点数尽量接近 21 点且不超过 21。你可以点击“要牌”继续取牌，或点击“停牌”结束并与庄家比点数。点数相同为和局，双方都超过 21 点则你输。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "A（Ace）牌怎么算分？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A 牌会自动按 11 点计算；如果这样超过 21 点，则自动改按 1 点计算。例如 A + 9 + 5 会算作 15 点而不是 25 点。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "21 点里的下注涉及真实金钱吗？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "不涉及。21 点与其他所有游戏一样只使用虚拟筹码，筹码仅保存在你自己的浏览器本地存储中，既不能充值也不能提现，更不涉及任何真实货币交易。"
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+
+  <header class="site-header" role="banner">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html" aria-label="星悦轻量娱乐场首页">
+        <span class="brand-mark" aria-hidden="true">🎰</span>
+        <span class="brand-name">星悦轻量娱乐场</span>
+      </a>
+      <nav class="site-nav" aria-label="主导航">
+        <ul>
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="slots.html">老虎机</a></li>
+          <li><a href="dice.html">骰子</a></li>
+          <li><a href="coinflip.html">抛硬币</a></li>
+          <li><a href="blackjack.html" aria-current="page">21点</a></li>
+          <li><a href="../about.html">关于</a></li>
+        </ul>
+      </nav>
+      <div class="balance-pill" aria-live="polite">
+        <span class="balance-label">虚拟筹码</span>
+        <span class="balance-value" id="balance-top">1000</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" role="main">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="面包屑">
+        <a href="../index.html">首页</a> › <span aria-current="page">21点</span>
+      </nav>
+
+      <section class="section" aria-labelledby="game-title">
+        <h1 id="game-title">🃏 21点（Blackjack）</h1>
+        <p class="section-intro">
+          用虚拟筹码下注，让手牌总点数尽量接近 21 点。可以点击「要牌」继续抽牌，或点击「停牌」与庄家比点数。
+          A 牌自动在 11 点与 1 点之间取最优值，庄家点数不足 17 点会自动补牌。本页为纯静态演示，不涉及任何真实金钱。
+        </p>
+
+        <div class="game-stage" role="group" aria-labelledby="game-title">
+          <div class="bj-block">
+            <h2 class="bj-label" id="dealer-label">庄家</h2>
+            <div class="hands" id="dealer-hand" aria-labelledby="dealer-label"></div>
+            <p class="bj-total">庄家点数：<strong id="dealer-total">—</strong></p>
+          </div>
+
+          <div class="bj-divider" role="presentation"></div>
+
+          <div class="bj-block">
+            <h2 class="bj-label" id="player-label">你</h2>
+            <div class="hands" id="player-hand" aria-labelledby="player-label"></div>
+            <p class="bj-total">你的点数：<strong id="player-total">—</strong></p>
+          </div>
+
+          <div class="bet-controls">
+            <label for="bet">下注（虚拟筹码）</label>
+            <input type="number" id="bet" min="1" step="1" value="50" inputmode="numeric" />
+          </div>
+
+          <div class="stage-row">
+            <button class="btn btn-primary" id="deal" type="button">发牌</button>
+            <button class="btn btn-ghost" id="hit" type="button" disabled>要牌</button>
+            <button class="btn btn-ghost" id="stand" type="button" disabled>停牌</button>
+            <button class="btn btn-ghost" id="reset-balance" type="button">重置筹码</button>
+          </div>
+
+          <p class="result" id="result" role="status" aria-live="polite">点击「发牌」开始一局 21 点。</p>
+        </div>
+
+        <p class="center" style="margin-top:18px;color:var(--text-dim);font-size:.9rem;">
+          当前余额：<strong id="balance-game">1000</strong> 虚拟筹码
+        </p>
+      </section>
+
+      <section class="section section-alt" aria-labelledby="rules-title">
+        <div class="container prose">
+          <h2 id="rules-title">21 点玩法与规则</h2>
+          <ul>
+            <li><strong>发牌</strong>：你与庄家各得两张牌，庄家其中一张为暗牌，结算时才揭晓。</li>
+            <li><strong>点数</strong>：J / Q / K 均计 10 点，A 牌计 11 点（超过 21 时自动降为 1 点）。</li>
+            <li><strong>要牌</strong>：点击「要牌」再抽一张牌，直到你选择「停牌」。</li>
+            <li><strong>停牌</strong>：结束你的回合，庄家按「不足 17 点必须补牌」的规则自动完成。</li>
+            <li><strong>结算</strong>：点数接近 21 且不超过 21 者胜；双方相同为和局；超过 21 点即爆牌判负。</li>
+            <li><strong>天牌</strong>：起手两张牌正好 21 点，按 3:2 赔率获胜。</li>
+          </ul>
+          <p>
+            全部使用<strong>虚拟筹码</strong>，余额保存在浏览器本地存储中，不涉及真实货币、充值与提现，
+            也不提供任何赌博服务。请保持适度娱乐。
+          </p>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="faq-title">
+        <div class="container prose">
+          <h2 id="faq-title">常见问题（FAQ）</h2>
+          <dl class="faq">
+            <dt>21 点游戏规则是什么？</dt>
+            <dd>每局开始会给你发两张牌、庄家发两张牌（其中一张暗牌）。目标是让手牌总点数尽量接近 21 点且不超过 21。你可以点击「要牌」继续取牌，或点击「停牌」结束并与庄家比点数。点数相同为和局，双方都超过 21 点则你输。</dd>
+            <dt>A（Ace）牌怎么算分？</dt>
+            <dd>A 牌会自动按 11 点计算；如果这样超过 21 点，则自动改按 1 点计算。例如 A + 9 + 5 会算作 15 点而不是 25 点。</dd>
+            <dt>21 点里的下注涉及真实金钱吗？</dt>
+            <dd>不涉及。21 点与其他所有游戏一样只使用虚拟筹码，筹码仅保存在你自己的浏览器本地存储中，既不能充值也不能提现，更不涉及任何真实货币交易。</dd>
+          </dl>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+      <p class="footer-brand">🎰 星悦轻量娱乐场</p>
+      <nav class="footer-nav" aria-label="页脚导航">
+        <a href="../index.html">首页</a>
+        <a href="../about.html">关于与免责声明</a>
+        <a href="../sitemap.xml">站点地图</a>
+      </nav>
+      <p class="footer-note">演示项目 · 使用虚拟筹码，不涉及真实金钱 · © <span id="year">2026</span> 星悦轻量娱乐场</p>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js" defer></script>
+  <script src="../assets/js/blackjack.js" defer></script>
+</body>
+</html>

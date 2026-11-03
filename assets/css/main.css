@@ -281,4 +281,38 @@ input:focus-visible,
   .site-nav { order: 3; width: 100%; }
   .balance-pill { margin-left: 0; }
   .reel, .die, .coin { width: 72px; height: 72px; font-size: 2.2rem; }
+  .card { width: 52px; height: 74px; font-size: 1.2rem; }
 }
+
+/* ---------- 21点：扑克牌 ---------- */
+.bj-block { text-align: center; }
+.bj-label {
+  font-size: .95rem; color: var(--gold); margin: 0 0 10px;
+  letter-spacing: .12em; font-weight: 700;
+}
+.hands {
+  display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+  min-height: 96px; align-items: center;
+}
+.card {
+  display: grid; place-items: center;
+  width: 64px; height: 90px;
+  background: #fdfdfb; color: #12182e;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, .3);
+  font-weight: 800; font-size: 1.5rem; line-height: 1;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .32);
+  animation: card-in .18s ease;
+}
+.card.red { color: #d3263c; }
+.card.back {
+  background: repeating-linear-gradient(45deg, #34427a 0 7px, #26325e 7px 14px);
+  border-color: rgba(255, 255, 255, .25);
+}
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(8px) scale(.96); }
+  to { opacity: 1; transform: none; }
+}
+.bj-total { color: var(--text-dim); margin: 10px 0 0; }
+.bj-total strong { color: var(--gold-strong); font-size: 1.1rem; }
+.bj-divider { height: 1px; background: rgba(255, 255, 255, .1); margin: 22px 0; }
