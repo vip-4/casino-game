@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://vip882.gitee.io/casino-game/</loc>
+    <loc>https://vip-4.github.io/casino-game/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://vip882.gitee.io/casino-game/about.html</loc>
+    <loc>https://vip-4.github.io/casino-game/about.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://vip882.gitee.io/casino-game/games/slots.html</loc>
+    <loc>https://vip-4.github.io/casino-game/games/slots.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://vip882.gitee.io/casino-game/games/dice.html</loc>
+    <loc>https://vip-4.github.io/casino-game/games/dice.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://vip882.gitee.io/casino-game/games/coinflip.html</loc>
+    <loc>https://vip-4.github.io/casino-game/games/coinflip.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>

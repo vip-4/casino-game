@@ -25,7 +25,18 @@ python -m http.server 8080   # 然后访问 http://localhost:8080
 仓库根目录即站点根目录。可直接部署到任意静态托管平台。
 > 注意：社交平台对 SVG 的 OG 图片支持有限，生产环境可把 `assets/img/og-cover.svg` 替换为 PNG 封面。
 
-### 方案 A：Cloudflare Pages（推荐，一条命令）
+### 方案 A：GitHub Pages（当前生产环境）
+仓库已推送至 `vip-4/casino-game` 并开启 GitHub Pages，生产地址：
+**https://vip-4.github.io/casino-game/**
+
+```bash
+# 本地修改后同步到 GitHub（本仓库经 orphan 分支 github-clean 推送）：
+git push github github-clean:main
+```
+> 说明：仓库历史不含任何密钥；`deploy-r2.ps1` 的 R2 凭证请通过环境变量
+> `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` 传入，勿硬编码。
+
+### 方案 B：Cloudflare Pages
 在**本机**（需能访问 Cloudflare）安装 Node.js 后执行：
 ```bash
 npx wrangler pages deploy . --project-name=casino-game-prod

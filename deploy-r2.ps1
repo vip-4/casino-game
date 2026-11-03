@@ -7,9 +7,15 @@
 #
 # 运行： powershell -NoProfile -ExecutionPolicy Bypass -File deploy-r2.ps1
 
-$ACCOUNT   = "ceffe067ff7027b695ef91fcea9fa38a"
-$AK        = "86431f3badfc3b717fea67dbc943bda4"   # Access Key ID
-$SK        = "bcc29411cfd0c9f0cd4127fb54b51e9e5cc62de148ce26cb1939d3c0ac6f28fc" # Secret Access Key
+$ACCOUNT   = "ceffe067ff7027b695ef91fcea9fa38a"  # R2 账户 ID（非机密）
+# 凭证通过环境变量传入，避免将密钥提交到仓库：
+#   $env:R2_ACCESS_KEY_ID / $env:R2_SECRET_ACCESS_KEY
+$AK        = if ($env:R2_ACCESS_KEY_ID) { $env:R2_ACCESS_KEY_ID } else { "" }
+$SK        = if ($env:R2_SECRET_ACCESS_KEY) { $env:R2_SECRET_ACCESS_KEY } else { "" }
+if (-not $AK -or -not $SK) {
+  Write-Output "请在环境变量中设置 R2_ACCESS_KEY_ID 与 R2_SECRET_ACCESS_KEY 后重试。"
+  exit 1
+}
 $Bucket    = "casino-game-prod"
 $Endpoint  = "$ACCOUNT.r2.cloudflarestorage.com"
 $LocalDir  = $PSScriptRoot
