@@ -120,5 +120,18 @@ aws s3 sync . s3://casino-game-prod \
 > 之后可通过 `https://pub-<hash>.r2.dev/casino-game-prod/index.html` 访问；
 > 也可在 Pages 项目中通过 Worker 绑定 R2 作为后端。
 
+## 账户基础设施（infra/）
+本仓库同时记录了站点所依赖的**账户级基础设施改动**，便于复现与回滚：
+
+| 路径 | 说明 |
+| --- | --- |
+| `worker/casino-pages-proxy.js` | 自定义域 `casino.vip01.cc.cd` 的反向代理 Worker（`www` → 主域 301、Location 改写回规范域名） |
+| `deploy-worker.ps1` | 幂等发布上面这个 Worker 并绑定路由 |
+| `infra/geo-router/` | 地域路由 Worker `h5-game-geo-router` 的源码与部署脚本（详见该目录 README） |
+
+> `h5-game-geo-router` 绑定在账户内 21 个 zone 的通配路由上，
+> 是 `vip01.cc.cd` / `vip4.cc.cd` / `088.us.ci` 等全部镜像域名、以及 `fb01/gg01/tk01`
+> 等平台验证子域名的实际入口。详见 [`infra/geo-router/README.md`](infra/geo-router/README.md)。
+
 ## 免责声明
 本项目仅供学习、演示与娱乐，不提供任何赌博服务，不涉及真实货币交易。
