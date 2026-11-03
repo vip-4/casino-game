@@ -1,0 +1,284 @@
+/* ============================================================
+   星悦轻量娱乐场 — 全局样式
+   设计目标：零依赖、轻量、响应式、可访问、尊重 prefers-reduced-motion
+   ============================================================ */
+
+:root {
+  --bg: #0b1020;
+  --bg-alt: #121a33;
+  --surface: #18213f;
+  --surface-2: #1f2a4d;
+  --text: #eef2ff;
+  --text-dim: #aab3d6;
+  --gold: #f4c95d;
+  --gold-strong: #ffd970;
+  --accent: #6ea8fe;
+  --good: #4ade80;
+  --bad: #f87171;
+  --radius: 14px;
+  --maxw: 1080px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC",
+    "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+  background:
+    radial-gradient(1200px 600px at 70% -10%, #1b264d 0%, transparent 60%),
+    radial-gradient(900px 500px at -10% 10%, #16203f 0%, transparent 55%),
+    var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+img, svg { max-width: 100%; height: auto; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.container { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: 20px; }
+
+/* ---------- 可访问性：跳过链接 ---------- */
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  background: var(--gold);
+  color: #1a1300;
+  padding: 10px 16px;
+  border-radius: 0 0 10px 0;
+  z-index: 100;
+  font-weight: 700;
+}
+.skip-link:focus { left: 0; }
+
+/* ---------- 可见焦点 ---------- */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ---------- 头部 ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(11, 16, 32, .82);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 64px;
+  flex-wrap: wrap;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+.brand:hover { text-decoration: none; }
+.brand-mark { font-size: 1.4rem; }
+
+.site-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+.site-nav a {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 10px;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+.site-nav a:hover { color: var(--text); background: var(--surface); text-decoration: none; }
+.site-nav a[aria-current="page"] { color: var(--gold); background: var(--surface); }
+
+.balance-pill {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid rgba(244, 201, 93, .35);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+.balance-label { color: var(--text-dim); font-size: .85rem; font-weight: 600; }
+.balance-value { color: var(--gold-strong); font-variant-numeric: tabular-nums; }
+
+/* ---------- Hero ---------- */
+.hero { padding: 64px 0 40px; text-align: center; }
+.eyebrow {
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-size: .8rem;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+.hero h1 {
+  font-size: clamp(2.2rem, 6vw, 3.6rem);
+  margin: 0 0 14px;
+  line-height: 1.1;
+  background: linear-gradient(180deg, #fff, var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.lead { font-size: clamp(1rem, 2.4vw, 1.25rem); color: var(--text-dim); max-width: 720px; margin: 0 auto 24px; }
+.hero-note { color: var(--text-dim); font-size: .9rem; margin-top: 18px; }
+.cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ---------- 按钮 ---------- */
+.btn {
+  display: inline-block;
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform .08s ease, filter .15s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: linear-gradient(180deg, var(--gold-strong), var(--gold)); color: #1a1300; }
+.btn-primary:hover { filter: brightness(1.05); text-decoration: none; }
+.btn-ghost { background: transparent; color: var(--text); border-color: rgba(255,255,255,.25); }
+.btn-ghost:hover { background: var(--surface); text-decoration: none; }
+
+/* ---------- 区块 ---------- */
+.section { padding: 48px 0; }
+.section-alt { background: linear-gradient(180deg, rgba(255,255,255,.02), transparent); border-block: 1px solid rgba(255,255,255,.06); }
+.section h2 { font-size: clamp(1.5rem, 4vw, 2.1rem); margin: 0 0 8px; }
+.section-intro { color: var(--text-dim); margin: 0 0 28px; }
+
+/* ---------- 游戏卡片 ---------- */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+}
+.game-card {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: var(--shadow);
+}
+.game-icon { font-size: 2rem; }
+.game-card h3 { margin: 0; font-size: 1.2rem; }
+.game-card h3 a { color: var(--text); }
+.card-link { margin-top: auto; color: var(--gold); font-weight: 700; }
+
+/* ---------- 特性 ---------- */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.feature {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.feature h3 { margin: 0 0 6px; font-size: 1.05rem; }
+
+/* ---------- 富文本 ---------- */
+.prose { max-width: 760px; }
+.prose p, .prose li { color: var(--text-dim); }
+.prose strong { color: var(--text); }
+.prose ul, .prose ol { padding-left: 1.2em; }
+.steps { padding-left: 1.2em; }
+.steps li { margin-bottom: 8px; }
+
+.faq dt { font-weight: 700; color: var(--text); margin-top: 16px; }
+.faq dd { margin: 4px 0 0; color: var(--text-dim); }
+.center { text-align: center; }
+
+/* ---------- 游戏台面（各游戏共用） ---------- */
+.game-stage {
+  background: var(--surface);
+  border: 1px solid rgba(244,201,93,.25);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-top: 20px;
+  box-shadow: var(--shadow);
+}
+.stage-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; justify-content: center; }
+.reel, .die, .coin {
+  font-size: 3rem;
+  background: var(--surface-2);
+  border-radius: 12px;
+  width: 96px; height: 96px;
+  display: grid; place-items: center;
+  border: 1px solid rgba(255,255,255,.1);
+}
+.reels { display: flex; gap: 12px; justify-content: center; margin: 12px 0; }
+.spin-anim { animation: pop .25s ease; }
+@keyframes pop { 0% { transform: scale(.8); } 100% { transform: scale(1); } }
+
+.bet-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center; margin: 16px 0; }
+.bet-controls label { color: var(--text-dim); font-weight: 600; }
+.bet-controls input[type="number"] {
+  width: 120px; padding: 10px 12px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.15); background: var(--bg-alt); color: var(--text);
+  font-size: 1rem;
+}
+.choice-group { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.choice {
+  padding: 10px 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,.2);
+  background: var(--surface-2); color: var(--text); font-weight: 700; cursor: pointer;
+}
+.choice[aria-pressed="true"] { border-color: var(--gold); background: rgba(244,201,93,.15); color: var(--gold-strong); }
+
+.result {
+  text-align: center; margin-top: 18px; font-size: 1.15rem; font-weight: 700; min-height: 1.6em;
+}
+.result.win { color: var(--good); }
+.result.lose { color: var(--bad); }
+
+/* ---------- 页脚 ---------- */
+.site-footer { border-top: 1px solid rgba(255,255,255,.08); padding: 32px 0; margin-top: 40px; }
+.footer-inner { display: flex; flex-direction: column; gap: 12px; align-items: center; text-align: center; }
+.footer-brand { font-weight: 800; margin: 0; }
+.footer-nav { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.footer-note { color: var(--text-dim); font-size: .85rem; margin: 0; }
+
+/* ---------- 面包屑 ---------- */
+.breadcrumb { color: var(--text-dim); font-size: .9rem; margin: 18px 0 0; }
+.breadcrumb a { color: var(--text-dim); }
+
+/* ---------- 减少动效偏好 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* ---------- 小屏适配 ---------- */
+@media (max-width: 560px) {
+  .header-inner { gap: 10px; }
+  .site-nav { order: 3; width: 100%; }
+  .balance-pill { margin-left: 0; }
+  .reel, .die, .coin { width: 72px; height: 72px; font-size: 2.2rem; }
+}

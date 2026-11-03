@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>骰子比大小 | 星悦轻量娱乐场</title>
+  <meta name="description" content="星悦轻量娱乐场的骰子比大小：纯静态休闲游戏，使用虚拟筹码，不涉及真实金钱。你与电脑同时掷骰，点数大者获胜，平局退还下注。" />
+  <meta name="keywords" content="骰子游戏,比大小,掷骰子,网页游戏,虚拟筹码,休闲游戏,免费游戏" />
+  <meta name="author" content="星悦轻量娱乐场" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://vip882.gitee.io/casino-game/games/dice.html" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="zh_CN" />
+  <meta property="og:site_name" content="星悦轻量娱乐场" />
+  <meta property="og:title" content="骰子比大小 | 星悦轻量娱乐场" />
+  <meta property="og:description" content="纯静态骰子比大小游戏，使用虚拟筹码，不涉及真实金钱。" />
+  <meta property="og:url" content="https://vip882.gitee.io/casino-game/games/dice.html" />
+  <meta property="og:image" content="https://vip882.gitee.io/casino-game/assets/img/og-cover.svg" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="骰子比大小 | 星悦轻量娱乐场" />
+  <meta name="twitter:description" content="纯静态骰子比大小游戏，使用虚拟筹码，不涉及真实金钱。" />
+  <meta name="twitter:image" content="https://vip882.gitee.io/casino-game/assets/img/og-cover.svg" />
+
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../assets/css/main.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://vip882.gitee.io/casino-game/" },
+      { "@type": "ListItem", "position": 2, "name": "骰子比大小", "item": "https://vip882.gitee.io/casino-game/games/dice.html" }
+    ]
+  }
+  </script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+
+  <header class="site-header" role="banner">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html" aria-label="星悦轻量娱乐场首页">
+        <span class="brand-mark" aria-hidden="true">🎰</span>
+        <span class="brand-name">星悦轻量娱乐场</span>
+      </a>
+      <nav class="site-nav" aria-label="主导航">
+        <ul>
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="slots.html">老虎机</a></li>
+          <li><a href="dice.html" aria-current="page">骰子</a></li>
+          <li><a href="coinflip.html">抛硬币</a></li>
+          <li><a href="../about.html">关于</a></li>
+        </ul>
+      </nav>
+      <div class="balance-pill" aria-live="polite">
+        <span class="balance-label">虚拟筹码</span>
+        <span class="balance-value" id="balance-top">1000</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" role="main">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="面包屑">
+        <a href="../index.html">首页</a> › <span aria-current="page">骰子比大小</span>
+      </nav>
+
+      <section class="section" aria-labelledby="game-title">
+        <h1 id="game-title">🎲 骰子比大小</h1>
+        <p class="section-intro">点击“掷骰”，你与电脑各掷一颗骰子，点数大者获胜并赢得双倍下注；平局则退还下注。全部使用虚拟筹码。</p>
+
+        <div class="game-stage" role="group" aria-labelledby="game-title">
+          <div class="stage-row">
+            <div style="text-align:center">
+              <div class="die" id="die-player" role="img" aria-label="你的骰子">⚀</div>
+              <p style="color:var(--text-dim);margin:6px 0 0">你</p>
+            </div>
+            <div style="font-size:1.5rem;color:var(--text-dim)">VS</div>
+            <div style="text-align:center">
+              <div class="die" id="die-cpu" role="img" aria-label="电脑的骰子">⚀</div>
+              <p style="color:var(--text-dim);margin:6px 0 0">电脑</p>
+            </div>
+          </div>
+
+          <div class="bet-controls">
+            <label for="bet">下注（虚拟筹码）</label>
+            <input type="number" id="bet" min="1" step="1" value="50" inputmode="numeric" />
+          </div>
+
+          <div class="stage-row">
+            <button class="btn btn-primary" id="roll" type="button">掷骰</button>
+            <button class="btn btn-ghost" id="reset-balance" type="button">重置筹码</button>
+          </div>
+
+          <p class="result" id="result" role="status" aria-live="polite"></p>
+        </div>
+
+        <p class="center" style="margin-top:18px;color:var(--text-dim);font-size:.9rem;">
+          当前余额：<strong id="balance-game">1000</strong> 虚拟筹码
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+      <p class="footer-brand">🎰 星悦轻量娱乐场</p>
+      <nav class="footer-nav" aria-label="页脚导航">
+        <a href="../index.html">首页</a>
+        <a href="../about.html">关于与免责声明</a>
+        <a href="../sitemap.xml">站点地图</a>
+      </nav>
+      <p class="footer-note">演示项目 · 使用虚拟筹码，不涉及真实金钱 · © <span id="year">2026</span> 星悦轻量娱乐场</p>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js" defer></script>
+  <script src="../assets/js/dice.js" defer></script>
+</body>
+</html>

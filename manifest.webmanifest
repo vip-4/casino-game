@@ -1,0 +1,17 @@
+{
+  "name": "星悦轻量娱乐场",
+  "short_name": "星悦娱乐场",
+  "description": "纯静态、零依赖的网页休闲游戏合集，使用虚拟筹码，不涉及真实金钱。",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#0b1020",
+  "icons": [
+    {
+      "src": "assets/img/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

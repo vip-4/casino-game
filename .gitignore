@@ -1,0 +1,14 @@
+# 编辑器 / 系统
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# 依赖 / 构建产物（本项目为零依赖，无需这些）
+node_modules/
+dist/
+build/
+
+# 日志
+*.log

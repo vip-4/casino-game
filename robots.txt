@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vip882.gitee.io/casino-game/sitemap.xml

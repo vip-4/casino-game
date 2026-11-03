@@ -1,0 +1,15 @@
+# GitCode / AtomGit Pages 部署（GitLab CI 风格）
+# 该 Job 将静态站点输出到 public/，由 Pages 服务托管。
+pages:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - mkdir -p public
+    - cp -r assets public/assets
+    - cp -r games public/games
+    - cp index.html about.html 404.html robots.txt sitemap.xml manifest.webmanifest public/ || true
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
