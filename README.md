@@ -22,6 +22,12 @@
 python -m http.server 8080   # 然后访问 http://localhost:8080
 ```
 
+## 测试
+21 点游戏附带零依赖逻辑测试（用最小 DOM stub 加载真实 `main.js` / `blackjack.js`，跑 5000 局随机对局校验不变量）：
+```bash
+node tests/blackjack.test.cjs
+```
+
 ## 部署
 仓库根目录即站点根目录。可直接部署到任意静态托管平台。
 > 社交分享封面默认使用 `assets/img/og-cover.png`（1200×630 PNG，兼容微信、微博、Twitter、Facebook 等各平台）；

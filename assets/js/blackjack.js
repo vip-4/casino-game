@@ -169,6 +169,13 @@
     var balance = window.XY.getBalance();
 
     if (balance < amount) {
+      // 无法下注时清空台面，避免上一局的手牌与提示同时出现造成误解
+      player = [];
+      dealer = [];
+      dealerRevealed = false;
+      phase = 'idle';
+      render();
+      setButtons();
       setResult('虚拟筹码不足（需要 ' + amount + '，当前只有 ' + balance + '）。请减少下注或点击「重置筹码」。', 'lose');
       return;
     }
