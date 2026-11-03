@@ -16,6 +16,14 @@
 | 抛硬币猜正反 | `games/coinflip.html` |
 | 21点（Blackjack） | `games/blackjack.html` |
 
+## 页面
+| 页面 | 路径 | 说明 |
+| --- | --- | --- |
+| 首页 | `index.html` | 站点总览、游戏入口、玩法说明与 FAQ |
+| 品牌合集页 | `hub.html` | 汇总旗下全部游戏站点（含同账户下的其他独立站点），`CollectionPage` + `ItemList` 结构化数据 |
+| 关于 | `about.html` | 项目说明与免责声明 |
+| 404 | `404.html` | 错误页 |
+
 ## 本地预览
 无需构建。直接用浏览器打开 `index.html`，或使用任意静态服务器：
 ```bash
@@ -33,10 +41,11 @@ node tests/blackjack.test.cjs
 > 社交分享封面默认使用 `assets/img/og-cover.png`（1200×630 PNG，兼容微信、微博、Twitter、Facebook 等各平台）；
 > `assets/img/og-cover.svg` 作为矢量备用保留。可用 `tools/gen-og-cover.ps1` 重新生成 PNG 封面。
 
-### 方案 A：Cloudflare Pages（当前生产环境）✅
-生产地址：**https://casino-game-3nn.pages.dev/**
-Pages 项目名 `casino-game`（Cloudflare 账户 `33717d3e6845f08352ee14d9d672e273`）。
+### 方案 A：Cloudflare Pages + 自定义域名（当前生产环境）✅
+**生产地址：https://casino.vip01.cc.cd/**
+（Pages 源站：https://casino-game-3nn.pages.dev/ ；Pages 项目名 `casino-game`，账户 `33717d3e6845f08352ee14d9d672e273`）
 
+发布静态资源：
 ```bash
 npm install -g wrangler
 export CLOUDFLARE_API_TOKEN=<你的 API Token>
@@ -44,6 +53,31 @@ export CLOUDFLARE_ACCOUNT_ID=33717d3e6845f08352ee14d9d672e273
 npx wrangler pages deploy . --project-name=casino-game --branch=main
 ```
 
+绑定自定义域名（Worker 反向代理 + DNS）：
+```powershell
+$env:CLOUDFLARE_API_TOKEN = "<你的 API Token>"
+$env:CLOUDFLARE_ACCOUNT_ID = "33717d3e6845f08352ee14d9d672e273"
+$env:CLOUDFLARE_ZONE_ID    = "2754848880ff90a8cc6657b82accbf2a"   # vip01.cc.cd
+powershell -NoProfile -ExecutionPolicy Bypass -File deploy-worker.ps1
+```
+`deploy-worker.ps1` 会幂等地完成三件事：
+1. 上传 `worker/casino-pages-proxy.js`（ES module Worker）；
+2. 删除并重建路由 `casino.vip01.cc.cd/*` 与 `www.casino.vip01.cc.cd/*`；
+3. 校验该 zone 的全部路由未被破坏。
+
+配套 DNS 记录（`vip01.cc.cd`，proxied = true）：
+| 类型 | 名称 | 指向 |
+| --- | --- | --- |
+| CNAME | `casino` | `casino-game-3nn.pages.dev` |
+| CNAME | `www.casino` | `casino-game-3nn.pages.dev` |
+
+> **为什么要 Worker？** 该 zone 上存在一条兜底路由 `*.vip01.cc.cd/* → h5-game-geo-router`，
+> 会接管所有未显式绑定的子域名并返回它自己的 404。Cloudflare 按「最具体优先」匹配路由，
+> 因此给 `casino.vip01.cc.cd/*` 单独绑定一个反向代理 Worker 即可覆盖它，
+> Worker 再把请求转发到 Pages 源站。Worker 同时负责：
+> - `www.casino.vip01.cc.cd` → `casino.vip01.cc.cd` 的 **301 多域名跳转**；
+> - 把 Pages 返回的 `Location` 改写回规范域名，避免跳到 `*.pages.dev` 丢失品牌域名。
+>
 > **pretty URL 说明**：Cloudflare Pages 默认把 `.html` 以 308 跳转到无扩展名路径，
 > 因此 canonical / Open Graph / sitemap 使用 `/about`、`/games/slots` 这类无扩展名地址；
 > 站内链接仍写 `.html`（相对路径），在 Pages、GitHub Pages、Gitee 等任意平台都能正常工作。

@@ -316,3 +316,23 @@ input:focus-visible,
 .bj-total { color: var(--text-dim); margin: 10px 0 0; }
 .bj-total strong { color: var(--gold-strong); font-size: 1.1rem; }
 .bj-divider { height: 1px; background: rgba(255, 255, 255, .1); margin: 22px 0; }
+
+/* ---------- 品牌合集页：站点标识 ---------- */
+.site-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: .8rem;
+  color: var(--text-dim);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  word-break: break-all;
+}
+.site-dot {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--good);
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, .18);
+}

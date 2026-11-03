@@ -1,0 +1,2 @@
+# Cloudflare Pages 多域名跳转：别名域名 301 到主域名（canonical 域名）
+www.casino.vip01.cc.cd/*    casino.vip01.cc.cd/:splat    301

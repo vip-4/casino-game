@@ -1,32 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://casino-game-3nn.pages.dev/</loc>
+    <loc>https://casino.vip01.cc.cd/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://casino-game-3nn.pages.dev/about</loc>
+    <loc>https://casino.vip01.cc.cd/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  <url>
-    <loc>https://casino-game-3nn.pages.dev/games/slots</loc>
+    <url>
+    <loc>https://casino.vip01.cc.cd/hub</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+<url>
+    <loc>https://casino.vip01.cc.cd/games/slots</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://casino-game-3nn.pages.dev/games/dice</loc>
+    <loc>https://casino.vip01.cc.cd/games/dice</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://casino-game-3nn.pages.dev/games/coinflip</loc>
+    <loc>https://casino.vip01.cc.cd/games/coinflip</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://casino-game-3nn.pages.dev/games/blackjack</loc>
+    <loc>https://casino.vip01.cc.cd/games/blackjack</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://casino-game-3nn.pages.dev/sitemap.xml
+Sitemap: https://casino.vip01.cc.cd/sitemap.xml

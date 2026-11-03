@@ -43,11 +43,11 @@ $ct = @{
 
 $files = Get-ChildItem -Path $LocalDir -Recurse -File | Where-Object {
   $_.FullName -notmatch '[\\/]\.git[\\/]' -and
-  $_.FullName -notmatch '[\\/](tools|tests|_stage)[\\/]' -and
+  $_.FullName -notmatch '[\\/](tools|tests|worker|_stage)[\\/]' -and
   $_.FullName -notmatch '[\\/]\.wrangler[\\/]' -and
   $_.Name -notmatch '^\.' -and
   $_.Name -notmatch '^_' -and
-  $_.Name -notin @("deploy-r2.ps1", "README.md", ".gitlab-ci.yml")
+  $_.Name -notin @("deploy-r2.ps1", "deploy-worker.ps1", "README.md", ".gitlab-ci.yml")
 }
 $total = $files.Count
 $i = 0
