@@ -130,6 +130,7 @@ aws s3 sync . s3://casino-game-prod \
 | `infra/geo-router/` | 地域路由 Worker `h5-game-geo-router` 的源码与部署脚本（详见该目录 README） |
 | `infra/geo-router/deploy.ps1` | 幂等发布 geo-router（先读现有绑定再覆盖，支持 `-RemoveBinding`） |
 | `infra/geo-router/upload-prerender.ps1` | 把地区预渲染页面写入 R2 `h5-game-assets`（`<region>/index.html` 等 78 个对象） |
+| `infra/geo-router/locales/` | 地区落地页的本地化版本：`index.en.html`（en/sea/global）、`index.de.html`（eu）、`index.ja.html`（jpkr） |
 
 > `h5-game-geo-router` 绑定在账户内 21 个 zone 的通配路由上，
 > 是 `vip01.cc.cd` / `vip4.cc.cd` / `088.us.ci` 等全部镜像域名、以及 `fb01/gg01/tk01`

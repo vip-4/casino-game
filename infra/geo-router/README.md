@@ -88,7 +88,7 @@ Worker 未捕获异常 → Cloudflare 返回 **1101**。表现是「第一次访
 - 源站变更后旧缓存无法自动失效；
 - 故障期缓存的 404 无法清除（Worker 私有缓存，zone 级 `purge_cache` 清不掉）。
 
-现改为 `v6__region__device__lang__path`。**改内容后 bump 版本号即可一次性作废旧缓存**。
+现改为 `v7__region__device__lang__path`。**改内容后 bump 版本号即可一次性作废旧缓存**。
 
 ### ③ 恢复地区预渲染文件（R2 `h5-game-assets`）
 
@@ -106,6 +106,33 @@ Worker 未捕获异常 → Cloudflare 返回 **1101**。表现是「第一次访
 上传前会把站内链接改成**根绝对路径**（`assets/…` → `/assets/…`、`games/slots.html` → `/games/slots`），
 否则在 `/<region>/` 下相对路径会 404、样式全丢。
 地区专属文案可以**直接改 R2 对象**、无需重新部署——这正是预渲染的意义。
+
+### ⑤ 地区落地页本地化（en / sea / global / eu / jpkr）
+
+`REGION_MAPPING` 把访客国家映射到 6 个地区，因此给每个地区准备一份对应语言的落地页：
+
+| 地区 | 覆盖国家 | 落地页 | 语言 |
+| --- | --- | --- | --- |
+| `cn` | CN / HK / TW | `index.html`（站点自带） | 简体中文 |
+| `sea` | SG / MY / TH / VN / ID / PH / IN | `locales/index.en.html` | English |
+| `en` | US / CA / GB / AU / NZ | `locales/index.en.html` | English |
+| `global` | 其它所有国家 | `locales/index.en.html` | English |
+| `eu` | DE / FR / NL / ES / IT | `locales/index.de.html` | Deutsch |
+| `jpkr` | JP / KR | `locales/index.ja.html` | 日本語 |
+
+三份本地化页面在 `infra/geo-router/locales/` 下，结构与中文版完全一致（复用同一套
+`assets/css/main.css` 的 class），只替换文案与 `<html lang>` / `og:locale` / JSON-LD `inLanguage`：
+
+- `<title>` / `description` / `keywords` / `og:*` / `twitter:*` 全部本地化；
+- JSON-LD 仍是 `WebSite` + `Organization` + `FAQPage` 三段，FAQ 问答逐条翻译；
+- 品牌名保留中文「星悦轻量娱乐场」（不臆造英文/德文/日文品牌），仅描述性文案本地化；
+- `canonical` 仍指向 `https://casino.vip01.cc.cd/`（镜像域名的统一归一策略）。
+
+上传脚本按地区选择落地页；交叉键 `<visitor>/<target>/.html` 放的是 **target 地区**的落地页，
+所以任何访客访问 `/<region>/` 拿到的都是该地区语言的内容。
+
+> 子页面（`about` / `hub` / `games/*`）目前仍是中文版，各地区共用。
+> 要本地化同样只需新增一份语言文件 + 在脚本里加映射，无需改 Worker 代码。
 
 ### ④ 删除占位 A 记录
 

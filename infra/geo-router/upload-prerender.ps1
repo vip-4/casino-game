@@ -10,6 +10,13 @@
 # The last group exists so that every hreflang alternate advertised in the Link header
 # resolves no matter which region the visitor comes from.
 #
+# Landing pages are localized per region:
+#   cn                -> the site's own index.html (Chinese)
+#   en / sea / global -> locales/index.en.html
+#   eu                -> locales/index.de.html
+#   jpkr              -> locales/index.ja.html
+# The shared sub pages (about / hub / games/*) are still the Chinese originals.
+#
 # Run:
 #   $env:R2_ACCESS_KEY_ID     = "<access key id>"
 #   $env:R2_SECRET_ACCESS_KEY = "<secret access key>"
@@ -29,8 +36,20 @@ $bucket = 'h5-game-assets'
 $ep = "$acct.r2.cloudflarestorage.com"
 
 $regions = @('cn', 'en', 'eu', 'sea', 'jpkr', 'global')
+
+# landing page per region: cn keeps the site's own Chinese page, the other regions
+# get the localized landing page from infra/geo-router/locales/
+$localeFile = @{
+  'cn'     = 'index.html'
+  'en'     = 'infra/geo-router/locales/index.en.html'
+  'sea'    = 'infra/geo-router/locales/index.en.html'
+  'global' = 'infra/geo-router/locales/index.en.html'
+  'eu'     = 'infra/geo-router/locales/index.de.html'
+  'jpkr'   = 'infra/geo-router/locales/index.ja.html'
+}
+
+# sub pages are still the site's shared (Chinese) pages
 $pages = @(
-  'index.html',
   'about.html',
   'hub.html',
   'games/slots.html',
@@ -69,28 +88,34 @@ function Put-Key([string]$key, [string]$file) {
 }
 
 try {
-  # 1) per-region copies of the site pages
+  # 1) per-region landing page + shared sub pages
   foreach ($r in $regions) {
+    $landingSrc = Join-Path $root ($localeFile[$r] -replace '/', '\')
+    if (-not (Test-Path $landingSrc)) { Write-Output ("  skip (missing landing page): " + $localeFile[$r]); continue }
+    $landing = Convert-ToRootRelative ([IO.File]::ReadAllText($landingSrc, [Text.Encoding]::UTF8))
+    $tmpFile = Join-Path $tmp 'page.html'
+    [IO.File]::WriteAllText($tmpFile, $landing, (New-Object System.Text.UTF8Encoding($false)))
+
+    Put-Key ("$r/index.html") $tmpFile          # "/" and "/<region>"
+    Put-Key ("$r/.html") $tmpFile               # "/<region>/"
+
     foreach ($p in $pages) {
       $src = Join-Path $root ($p -replace '/', '\')
       if (-not (Test-Path $src)) { Write-Output ("  skip (missing source): " + $p); continue }
       $html = Convert-ToRootRelative ([IO.File]::ReadAllText($src, [Text.Encoding]::UTF8))
-      $tmpFile = Join-Path $tmp 'page.html'
       [IO.File]::WriteAllText($tmpFile, $html, (New-Object System.Text.UTF8Encoding($false)))
       Put-Key ("$r/$p") $tmpFile
     }
-    # "/<region>/" (trailing slash) -> "<region>/.html"
-    $html = Convert-ToRootRelative ([IO.File]::ReadAllText((Join-Path $root 'index.html'), [Text.Encoding]::UTF8))
-    $tmpFile = Join-Path $tmp 'page.html'
-    [IO.File]::WriteAllText($tmpFile, $html, (New-Object System.Text.UTF8Encoding($false)))
-    Put-Key ("$r/.html") $tmpFile
   }
 
-  # 2) cross-region roots: "/<region>/" as seen by a visitor of another region
+  # 2) cross-region roots: "/<region>/" as seen by a visitor of another region.
+  #    The content is the TARGET region's landing page, not the visitor's.
   foreach ($visitor in $regions) {
     foreach ($target in $regions) {
       if ($visitor -eq $target) { continue }
-      $html = Convert-ToRootRelative ([IO.File]::ReadAllText((Join-Path $root 'index.html'), [Text.Encoding]::UTF8))
+      $landingSrc = Join-Path $root ($localeFile[$target] -replace '/', '\')
+      if (-not (Test-Path $landingSrc)) { continue }
+      $html = Convert-ToRootRelative ([IO.File]::ReadAllText($landingSrc, [Text.Encoding]::UTF8))
       $tmpFile = Join-Path $tmp 'page.html'
       [IO.File]::WriteAllText($tmpFile, $html, (New-Object System.Text.UTF8Encoding($false)))
       Put-Key ("$visitor/$target/.html") $tmpFile

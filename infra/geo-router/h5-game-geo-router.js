@@ -1082,7 +1082,7 @@ function getPreferredLanguage(acceptLang) {
 __name(getPreferredLanguage, "getPreferredLanguage");
 function buildCacheKey(region, deviceType, language, pathname) {
   const normalizedPath = pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
-  return `v6__${region}__${deviceType}__${language}__${normalizedPath}`;
+  return `v7__${region}__${deviceType}__${language}__${normalizedPath}`;
 }
 __name(buildCacheKey, "buildCacheKey");
 function addLinkHeaders(response, request, region, pathname) {
