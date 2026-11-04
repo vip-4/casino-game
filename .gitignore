@@ -13,9 +13,12 @@ build/
 
 # 本地部署暂存目录 / 临时脚本
 _stage/
+_arcade/
+_*.csv
 _*.ps1
 _*.json
 _*.html
+_*.xml
 _*.err
 _*.mjs
 _*.js

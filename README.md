@@ -16,6 +16,18 @@
 | 抛硬币猜正反 | `games/coinflip.html` |
 | 21点（Blackjack） | `games/blackjack.html` |
 
+## Phaser 开源游戏合集
+站内另有 **101 款基于 Phaser 3 的开源经典游戏复刻**（射箭、2048、贪吃蛇、扫雷、俄罗斯方块、坦克大战……），
+每款都是自包含的单个 HTML 文件，纯前端、免安装、打开即玩：
+
+| 路径 | 说明 |
+| --- | --- |
+| `/phaser/` | 合集页，按体育竞技 / 棋牌卡牌 / 益智解谜 / 街机动作四大类分类（`CollectionPage` + `ItemList`） |
+| `/phaser/<游戏名>` | 单个游戏，例如 `/phaser/phaser-archery` |
+
+游戏文件本体存放在 R2 `h5-game-assets/phaser/`（源），由 `infra/geo-router/arcade/publish.ps1`
+同步并随站点一起发布；合集页由 `arcade/build-hub.mjs` 依据每个游戏自带的 title / h1 / description 自动生成。
+
 ## 页面
 | 页面 | 路径 | 说明 |
 | --- | --- | --- |
@@ -131,6 +143,7 @@ aws s3 sync . s3://casino-game-prod \
 | `infra/geo-router/deploy.ps1` | 幂等发布 geo-router（先读现有绑定再覆盖，支持 `-RemoveBinding`） |
 | `infra/geo-router/upload-prerender.ps1` | 把地区预渲染页面写入 R2 `h5-game-assets`（`<region>/index.html` 等 78 个对象） |
 | `infra/geo-router/locales/` | 地区落地页的本地化版本：`index.en.html`（en/sea/global）、`index.de.html`（eu）、`index.ja.html`（jpkr） |
+| `infra/geo-router/arcade/` | Phaser 开源游戏合集：从 R2 同步 101 款游戏 → 生成 `/phaser/` 合集页 → 部署到 Pages |
 
 > `h5-game-geo-router` 绑定在账户内 21 个 zone 的通配路由上，
 > 是 `vip01.cc.cd` / `vip4.cc.cd` / `088.us.ci` 等全部镜像域名、以及 `fb01/gg01/tk01`

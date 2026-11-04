@@ -134,6 +134,68 @@ Worker 未捕获异常 → Cloudflare 返回 **1101**。表现是「第一次访
 > 子页面（`about` / `hub` / `games/*`）目前仍是中文版，各地区共用。
 > 要本地化同样只需新增一份语言文件 + 在脚本里加映射，无需改 Worker 代码。
 
+## 第四轮修复（2026-11-04，Phaser 游戏合集 + 元数据一致性）
+
+### ① 把 R2 里 101 款 Phaser 开源游戏重新上线
+
+R2 `h5-game-assets/phaser/` 里有 **101 款基于 Phaser 3 的开源经典游戏复刻**
+（射箭、2048、贪吃蛇、扫雷、俄罗斯方块、坦克大战……），每款都是自包含的单个 HTML 文件，
+但 `PRERENDERED_PATHS` 里没有它们、原来的 Pages 源站也已删除 → **这批内容一直是访问不到的**。
+
+新增 `arcade/` 目录：
+
+| 文件 | 作用 |
+| --- | --- |
+| `arcade/build-hub.mjs` | 扫描游戏目录，从每个游戏自带的 `<title>` / `<h1>` / `description` 解析出中英文名与图标，自动分四大类（体育 26 / 棋牌 12 / 益智 23 / 街机 40），生成 `phaser/index.html` 合集页（含 CollectionPage + ItemList 结构化数据） |
+| `arcade/publish.ps1` | 从 R2 同步 `phaser/*.html` → 生成合集页 → 打包站点文件 → 用 wrangler 部署到 Pages（`h5games-3hm` / `casino-game` / `my-slot-game` 三个项目） |
+| `arcade/patch-lang.mjs` | Worker 补丁：注入的语言元数据跟随**内容地区**而不是访客地区 |
+| `arcade/patch-contentregion.mjs` | Worker 补丁：同上（内容地区推导） |
+
+上线后：
+
+- `https://casino.vip01.cc.cd/phaser/` 与任意镜像域名 `/phaser/` 都能打开合集页；
+- 101 款游戏各自可玩（`/phaser/phaser-archery`）；
+- 全部写进 `sitemap.xml`（合集页 + 101 条游戏 URL，仓库与线上由脚本保持同步）；
+- `hub.html` 增加「站内内容」区块指向 `/phaser/`。
+
+> Pages 会把 `foo.html` 308 跳到 `foo`，所以合集页链接与 sitemap 一律用**无扩展名**形式。
+
+### ② 注入的 `geo-language` 改为跟随「内容地区」
+
+原来注入用**访客识别到的地区**：
+
+```
+/eu/   -> html lang=de    geo-language=en     ✗
+/jpkr/ -> html lang=ja    geo-language=en     ✗
+```
+
+hreflang 头公布的正是 `/jpkr/`、`/eu/` 这类地区前缀 URL，爬虫抓到的却是「英文」标注——
+恰好把最该被正确标注的页面标错。
+
+改为按**实际服务的 R2 键**推导内容地区：
+
+```
+"<region>/index.html"        -> region
+"<region>/games/<page>.html" -> region        （第二段不是地区名）
+"<visitor>/<target>/.html"   -> target        （第二段是地区名）
+```
+
+修正后：
+
+| URL | html lang | geo-region | geo-language |
+| --- | --- | --- | --- |
+| `/cn/` | zh-CN | cn | zh-CN |
+| `/en/` | en | en | en |
+| `/eu/` | de | eu | de |
+| `/jpkr/` | ja | jpkr | ja |
+| `/` | 访客地区 | 访客地区 | 访客地区 |
+
+### ③ 不再注入重复的 WebSite 实体
+
+本地化落地页自带完整的 `WebSite` / `Organization` / `FAQPage` 三段结构化数据，
+Worker 再注入一份 `WebSite` 会产生**两个互相冲突的站点实体**（名称、url、inLanguage 都不同）。
+现在只有当页面**自己没声明** WebSite 实体时才注入（合集页、游戏页仍然会拿到）。
+
 ### ④ 删除占位 A 记录
 
 `vip01.cc.cd` 上三条指向 `192.0.2.1`（TEST-NET-1 文档保留地址）的占位记录已全部删除：

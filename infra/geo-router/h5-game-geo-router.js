@@ -1082,7 +1082,7 @@ function getPreferredLanguage(acceptLang) {
 __name(getPreferredLanguage, "getPreferredLanguage");
 function buildCacheKey(region, deviceType, language, pathname) {
   const normalizedPath = pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
-  return `v7__${region}__${deviceType}__${language}__${normalizedPath}`;
+  return `v10__${region}__${deviceType}__${language}__${normalizedPath}`;
 }
 __name(buildCacheKey, "buildCacheKey");
 function addLinkHeaders(response, request, region, pathname) {
@@ -1184,7 +1184,11 @@ async function tryPrerenderedHtml(request, env2, region, pathname, config2) {
     headers.set("X-Render-Type", "prerendered");
     headers.set("X-GEO-Region", region);
     const html = await responseText(object.body);
-    const injectedHtml = injectSeoIntoHtml(html, request, region, config2);
+    // the metadata must describe the page that was served, not the visitor:
+    // "<visitor>/<target>/.html" holds the <target> region landing page
+    const keyParts = r2Key.split("/");
+    const contentRegion = keyParts.length >= 2 && config2.regions[keyParts[1]] ? keyParts[1] : keyParts[0];
+    const injectedHtml = injectSeoIntoHtml(html, request, contentRegion, config2);
     return new Response(injectedHtml, { status: 200, headers });
   } catch (e) {
     console.error(`[PreRender] error for ${r2Key}:`, e);
@@ -1199,17 +1203,19 @@ function injectSeoIntoHtml(html, request, region, config2) {
     "@type": "WebSite",
     name: config2.siteName,
     url: url.origin,
-    description: region === "cn" ? "\u514D\u8D39\u5728\u7EBFH5\u6E38\u620F - \u8D5B\u9A6C\u3001\u8001\u864E\u673A\u3001\u4E8C\u5341\u4E00\u70B9\u3001\u9AB0\u5B50\u7ADE\u6280" : region === "jpkr" ? "\u7121\u6599\u30AA\u30F3\u30E9\u30A4\u30F3H5\u30B2\u30FC\u30E0 - \u7AF6\u99AC\u3001\u30B9\u30ED\u30C3\u30C8\u3001\u30D6\u30E9\u30C3\u30AF\u30B8\u30E3\u30C3\u30AF" : "Free online H5 games - Horse racing, slots, blackjack, dice arena",
-    inLanguage: region === "cn" ? "zh-CN" : region === "jpkr" ? "ja" : "en"
+    description: region === "cn" ? "\u514d\u8d39\u5728\u7ebfH5\u6e38\u620f - \u8001\u864e\u673a\u3001\u9ab0\u5b50\u3001\u629b\u786c\u5e01\u4e0e21\u70b9\uff0c\u53e6\u6709101\u6b3ePhaser\u5f00\u6e90\u6e38\u620f\u5408\u96c6" : region === "jpkr" ? "\u7121\u6599\u30aa\u30f3\u30e9\u30a4\u30f3H5\u30b2\u30fc\u30e0 - \u30b9\u30ed\u30c3\u30c8\u3001\u30b5\u30a4\u30b3\u30ed\u3001\u30b3\u30a4\u30f3\u6295\u3052\u3001\u30d6\u30e9\u30c3\u30af\u30b8\u30e3\u30c3\u30af\u3001Phaser\u30aa\u30fc\u30d7\u30f3\u30bd\u30fc\u30b9101\u9078\u3002\u4eee\u60f3\u30c1\u30c3\u30d7\u306e\u307f\u3001\u5b9f\u91d1\u306a\u3057\u3002" : region === "eu" ? "Kostenlose Online-H5-Spiele - Slots, W\u00fcrfel, M\u00fcnzwurf und Blackjack, dazu 101 Phaser-Klassiker. Nur virtuelle Chips, kein echtes Geld." : "Free online H5 games - slots, dice, coin flip and blackjack, plus 101 open-source Phaser classics. Virtual chips only, no real money.",
+    inLanguage: region === "cn" ? "zh-CN" : region === "jpkr" ? "ja" : region === "eu" ? "de" : "en"
   };
   const jsonLdHtml = `<script type="application/ld+json">${JSON.stringify(jsonLd)}<\/script>`;
   let result = html;
-  if (result.includes("</head>")) {
+  // a page that already declares its own WebSite entity keeps it (localized)
+  const hasOwnWebSite = /"@type"\s*:\s*"WebSite"/.test(result);
+  if (!hasOwnWebSite && result.includes("</head>")) {
     result = result.replace("</head>", `${jsonLdHtml}
 </head>`);
   }
   const metaRegion = `<meta name="geo-region" content="${region}">`;
-  const metaLang = `<meta name="geo-language" content="${region === "cn" ? "zh-CN" : region === "jpkr" ? "ja" : "en"}">`;
+  const metaLang = `<meta name="geo-language" content="${region === "cn" ? "zh-CN" : region === "jpkr" ? "ja" : region === "eu" ? "de" : "en"}">`;
   result = result.replace("<head>", `<head>
 ${metaRegion}
 ${metaLang}`);

@@ -62,7 +62,7 @@ $pages = @(
 function Convert-ToRootRelative([string]$html) {
   $html = [regex]::Replace($html, '(href|src)="\.\./', '$1="/')
   $html = [regex]::Replace($html, '(href|src)="\./', '$1="/')
-  $html = [regex]::Replace($html, '(href|src)="(assets/|games/)', '$1="/$2')
+  $html = [regex]::Replace($html, '(href|src)="(assets/|games/|phaser/)', '$1="/$2')
   $html = [regex]::Replace($html, '(href|src)="(index|about|hub|sitemap\.xml|manifest\.webmanifest)\.html"', '$1="/$2"')
   $html = $html.Replace('href="index.html"', 'href="/"')
   $html = $html.Replace('href="about.html"', 'href="/about"')
