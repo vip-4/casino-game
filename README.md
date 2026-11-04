@@ -128,10 +128,13 @@ aws s3 sync . s3://casino-game-prod \
 | `worker/casino-pages-proxy.js` | 自定义域 `casino.vip01.cc.cd` 的反向代理 Worker（`www` → 主域 301、Location 改写回规范域名） |
 | `deploy-worker.ps1` | 幂等发布上面这个 Worker 并绑定路由 |
 | `infra/geo-router/` | 地域路由 Worker `h5-game-geo-router` 的源码与部署脚本（详见该目录 README） |
+| `infra/geo-router/deploy.ps1` | 幂等发布 geo-router（先读现有绑定再覆盖，支持 `-RemoveBinding`） |
+| `infra/geo-router/upload-prerender.ps1` | 把地区预渲染页面写入 R2 `h5-game-assets`（`<region>/index.html` 等 78 个对象） |
 
 > `h5-game-geo-router` 绑定在账户内 21 个 zone 的通配路由上，
 > 是 `vip01.cc.cd` / `vip4.cc.cd` / `088.us.ci` 等全部镜像域名、以及 `fb01/gg01/tk01`
-> 等平台验证子域名的实际入口。详见 [`infra/geo-router/README.md`](infra/geo-router/README.md)。
+> 等平台验证子域名的实际入口。地区落地页由 R2 预渲染（`X-Render-Type: prerendered`），
+> 改地区文案只需改 R2 对象、无需重新部署。详见 [`infra/geo-router/README.md`](infra/geo-router/README.md)。
 
 ## 免责声明
 本项目仅供学习、演示与娱乐，不提供任何赌博服务，不涉及真实货币交易。

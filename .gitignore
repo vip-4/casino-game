@@ -18,6 +18,9 @@ _*.json
 _*.html
 _*.err
 _*.mjs
+_*.js
+_*.bin
+_*.log
 
 # 日志
 *.log

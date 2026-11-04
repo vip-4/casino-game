@@ -109,18 +109,42 @@ Worker 未捕获异常 → Cloudflare 返回 **1101**。表现是「第一次访
 
 ### ④ 删除占位 A 记录
 
-`vip01.cc.cd` 上的 `A vip-* → 192.0.2.1`（TEST-NET-1 文档保留地址）已删除，
-改由通配 CNAME `*.vip01.cc.cd → my-slot-game.pages.dev` 接管。
-`vip-NN.vip01.cc.cd` 仍返回 200，DNS 解析到 Cloudflare 真实边缘 IP。
-同 zone 内还剩两条同类占位记录（`slot.` / `luckyarcade.`），未动。
+`vip01.cc.cd` 上三条指向 `192.0.2.1`（TEST-NET-1 文档保留地址）的占位记录已全部删除：
+`vip-*`、`slot.`、`luckyarcade.`。改由通配 CNAME `*.vip01.cc.cd → my-slot-game.pages.dev` 接管。
+
+- `vip-NN.vip01.cc.cd` —— sitemap 里的 1050 条落地页入口，仍返回 200；
+- `luckyarcade.vip01.cc.cd` —— 有专属 Worker 路由 `luckyarcade.vip01.cc.cd/* → lucky-arcade`，
+  路由优先级高于通配，行为不变（仍返回幸运街机站点）；
+- `slot.vip01.cc.cd` —— 无专属路由，与其它通配子域一样由 geo-router 处理。
+
+> 若希望 `slot.` 真正成为老虎机站的别名，把它改成 CNAME 指向
+> `slotmachine-casino.pages.dev` 即可（`slotmachine.vip01.cc.cd` 就是这么配的）。
+
+## 第三轮修复（2026-11-04，定时任务）
+
+`scheduled` 任务原本按地区循环发请求：
+
+```
+6 个地区 × (1 次 /health + len(PRERENDERED_PATHS)=8 次预热) = 54 次子请求
+```
+
+**超过免费套餐单次调用 50 次子请求的上限**，tail 日志里最后一个地区每次都报
+`Too many subrequests by single Worker invocation`（该地区实际从未被预热）。
+
+现改为**每地区 1 次请求**（健康检查打源站根路径并顺带完成预热），共 6 次子请求：
+
+- 预热对象从 `prerenderedPaths` 全部路径改为源站根路径 `/`——因为地区落地页现在
+  由 R2（`REGIONAL_ASSETS`）提供，再去预热源站已无意义；
+- 健康检查从 `/health`（Pages 源站没有这个端点，永远 404）改为 `/`，日志才有判断价值；
+- 保留 5 秒超时，异常仍会被捕获并打印。
 
 ## 已知问题（未处理，供后续参考）
 
-`scheduled` 定时任务（健康检查 + 缓存预热）会按地区循环 `fetch(origin + path)`：
-6 个地区 × `prerenderedPaths`（8 条）+ 每地区一次 `/health` ≈ 54 次子请求，
-**超过免费套餐单次调用 50 次子请求的上限**——tail 日志里能看到最后一个地区报
-`Too many subrequests by single Worker invocation`。
-预热本身只打源站，对 Worker 私有缓存无效；如需修复可改为分批 `Promise.all` 或缩短预热列表。
+- 定时任务的预热打的是**源站**，对 Worker 私有缓存无效（Worker 缓存按
+  `region__device__lang__path` 分键，cron 不知道访客的设备/语言）。
+  想真正预热 Worker 缓存，需要 cron 去请求 Worker 自己的公网地址并带上对应 UA/语言头。
+- `PRERENDERED_PATHS` 绑定现在只在 cron 里用过一次；改预热策略后它就不再被引用，
+  可以保留作配置说明。
 
 ## 重新发布
 

@@ -1409,21 +1409,20 @@ var index_default = {
     for (const [region, rc] of Object.entries(config2.regions)) {
       try {
         const start = Date.now();
-        const resp = await fetch(rc.origin + "/health", { signal: AbortSignal.timeout(5e3) });
+        const resp = await fetch(rc.origin + "/", { signal: AbortSignal.timeout(5e3) });
         const latency = Date.now() - start;
         console.log(`[Health] ${region} \u2192 ${resp.status} (${latency}ms)`);
       } catch (e) {
         console.error(`[Health] ${region} FAILED:`, e.message);
       }
-      for (const p of config2.prerenderedPaths) {
-        try {
-          const r = await fetch(rc.origin + p);
-          console.log(`[Warmup] ${region}${p} \u2192 ${r.status}`);
-        } catch (e) {
-          console.error(`[Warmup] ${region}${p} FAILED:`, e.message);
-        }
-      }
-    }
+      // Keep this invocation under the plan subrequest limit (50 on the free plan).
+      // 6 regions x 1 request = 6 subrequests; the regional pages come from R2.
+      try {
+        const r = await fetch(rc.origin + "/", { signal: AbortSignal.timeout(5e3) });
+        console.log(`[Warmup] ${region}/ \u2192 ${r.status}`);
+      } catch (e) {
+        console.error(`[Warmup] ${region}/ FAILED:`, e.message);
+      }    }
     console.log("[Cron] Complete.");
   }
 };
